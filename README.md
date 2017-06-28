@@ -10,7 +10,7 @@ Prior to executing playbook:
   - GCE_PROJECT
 - And a gce.ini in inventory. (clone from ansible repo)
 
-'''
+```
 ansible-playbook -i inventory/gce.py dev_up_gce.yml
-'''
+```
 
