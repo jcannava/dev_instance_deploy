@@ -154,3 +154,11 @@
   git:
       repo: 'https://github.com/tpope/vim-fugitive'
       dest: '/home/{{ username }}/.vim/bundle/vim-fugitive'
+
+- name: Make Workspace directory
+  file:
+      path: '/home/{{ username }}/Workspace'
+      state: directory
+      owner: '{{ username }}'
+      group: '{{ groupname }}'
+      mode: 0775
