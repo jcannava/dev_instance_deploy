@@ -1,0 +1,41 @@
+---
+- hosts: localhost
+  gather_facts: no
+  connection: local
+
+  vars:
+    machine_type: n1-standard-1
+    image: debian-9
+    zone: europe-west2-a
+
+  tasks:
+    - name: Launch instance
+      gce:
+        instance_names: dev
+        machine_type: "{{ machine_type }}"
+        image: "{{ image }}"
+        zone: "{{ zone }}"
+        metadata: '{"group":"dev_instance", "startup-script": "apt-get update"}'
+        tags: 
+          - development
+        state: present
+      register: gce
+
+    - name: Add host to groupname
+      add_host: 
+        hostname: "{{ item.public_ip }}"
+        groupname: dev_instance_ip
+      with_items: "{{ gce.instance_data }}" 
+
+    - name: Wait for SSH
+      wait_for:
+        delay: 1
+        host: "{{ item.public_ip }}"
+        port: 22
+        state: started
+        timeout: 10
+      with_items: "{{ gce.instance_data }}"
+
+- hosts: dev_instance_ip
+  roles:
+      - baseconfig
